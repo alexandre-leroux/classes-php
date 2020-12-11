@@ -1,21 +1,22 @@
 <?php
 
+$user1 = new Userpdo();
 
+$login = $user1->login = 'alex';
+$password = $user1->password=  'password';
+$email = $user1->email= 'emafdbdfbvdil';
+$firstname = $user1->firstname=  'firvcvcvcvcst';
+$lastname = $user1->lastname = 'lasgfgfgfgt';
 
-$user1 = new Userpdo(NULL, 'alexaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'password','email@email.fr','alex','leroux');
-$user2 = new Userpdo(null, 'boris', 'password','email@email.fr','boris','stan');
-$user3 = new Userpdo(null, 'jean', 'password','email@email.fr','jean','lelefevre');
-$user4 = new Userpdo(null, 'arnold', 'password','email@email.fr','arnold','scwart');
-
-
-
-
-$user1->getLogin();
-
-$user1->getAllInfos() ;
-
-
-
+// $user1->register();
+// $user1->connect();
+// $user1->disconnect();
+// $user1->delete();
+// $user1->update($login, $password, $email, $firstname, $lastname);
+// $user1->isConnected();
+// $user1->getAllInfos();
+// $user1->getLogin() ;
+// $user1->refresh() ;
 
 
 class Userpdo{
@@ -27,15 +28,7 @@ class Userpdo{
     public  $firstname;
     public  $lastname;
 
-    public function __construct($id,$login, $password, $email, $firstname, $lastname)
-        {
-            $this->id = $id;
-            $this->login = $login;
-            $this->password = $password;
-            $this->email = $email;
-            $this->firstname = $firstname;
-            $this->lastname = $lastname;
-        }
+
 
     public function connection_bdd()
         {
@@ -52,8 +45,6 @@ class Userpdo{
 
 
     public function register(){
-        
-  
 
         $bdd = $this->connection_bdd();
         $requete = $bdd->prepare("INSERT INTO utilisateurs ( `login`, `password`, `email`, `firstname`, `lastname`) VALUES ( :login,  :password, :email, :firstname, :lastname)");
@@ -63,17 +54,19 @@ class Userpdo{
                                 'firstname'=>$this->firstname,
                                 'lastname'=>$this->lastname,
                                 ));
+        echo ' enregistrement de l\'utilisateur ok <br>';
 
         $bdd = null;
 
-    }
-
-
+                }
     public function connect(){
         $bdd = $this->connection_bdd();
         $requete = $bdd->prepare("SELECT * FROM utilisateurs WHERE login = :login");
         $requete->execute(array('login'=>$this->login));
         $resultat = $requete->fetch(PDO::FETCH_ASSOC);
+        if (  $resultat['password'] == $this->password)
+        {
+     
         $this->id = $resultat['id'];
         $this->login = $resultat['login'];
         $this->email = $resultat['email'];
@@ -81,39 +74,46 @@ class Userpdo{
         $this->firstname = $resultat['firstname'];
         $this->lastname = $resultat['lastname'];
         $bdd = null;
-        if ($this->id != NULL )
-        { return 1;}
-        else {return 0;}
-    }
+        $this->isconnect=1;
+        echo ' utilisateur connecté <br>';
+        }
+        else { echo ' pas connecte <br>'; }
+
+        return $resultat;
+                                }
 
     public function disconnect(){
-        unset($this->id, $this->login, $this->email, $this->password, $this->firstname, $this->lastname ) ;
-    }
+        unset($this->id, $this->login, $this->email, $this->password, $this->firstname, $this->lastname, $this->isconnect ) ;
+        echo ' utilisateur deco';
+        var_dump($this);    }
 
 
     public function delete(){
         $bdd = $this->connection_bdd();
+        $this->connect();
         $requete = $bdd->prepare("DELETE  FROM utilisateurs WHERE id =:id ");
         $requete->execute(array('id'=>$this->id));
         $bdd = null;
         $this->disconnect();
+        echo 'utilisateur supprimé et déconnecté';
     }
-    public function update(){
+    public function update($login, $password, $email, $firstname, $lastname){
         $bdd = $this->connection_bdd();
-  
+        $this->connect();
        $requete = $bdd->prepare("UPDATE utilisateurs  SET login=:login, password=:password, email=:email, firstname=:firstname, lastname=:lastname  WHERE id = '$this->id' ");
-       $requete->execute(array('login'=>$this->login,
-                                'password'=>$this->password,
-                                'email'=>$this->email,
-                                'firstname'=>$this->firstname,
-                                'lastname'=>$this->lastname,)) ;
+       $requete->execute(array('login'=>$login,
+                                'password'=>$password,
+                                'email'=>$email,
+                                'firstname'=>$firstname,
+                                'lastname'=>$lastname)) ;
+        echo 'profil update ok';
         $bdd = null;
     }
 
     public function isConnected() 
     {
 
-        if ($this->connect() == 1)
+        if ($this->isconnect == 1)
         {echo ' il est bien connecté';}
         else { echo ' is conenected failed';}
         
@@ -140,7 +140,21 @@ class Userpdo{
         echo '</pre> ';
         
     }
+    public function refresh() 
+    {
+        $bdd = $this->connection_bdd();
+        $resultat = $this->connect();
 
+
+         $this->login = $resultat['login'];
+         $this->password=  $resultat['password'];
+         $this->email= $resultat['email'];
+         $this->firstname=  $resultat['firstname'];
+         $this->lastname = $resultat['lastname'];
+
+         echo ' refresh ok';
+
+    }  
 
 
 
