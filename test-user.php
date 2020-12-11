@@ -24,27 +24,26 @@ require 'user.php';
 
 $user1 = new User();
 
-$login = $user1->login = 'jean';
-$password = $user1->password=  'password';
-$email = $user1->email= 'email';
-$firstname = $user1->firstname=  'first';
-$lastname = $user1->lastname = 'last';
+$user1->login = 'junior';
+$user1->password=  'password';
+$user1->email= 'email';
+$user1->firstname=  'first';
+$user1->lastname = 'last';
 
-// $user1->register($login,$password,$email,$firstname,$lastname);
+// $user1->register();
 
-$user1->connect($login, $password);
+// $user1->connect();
 
-// var_dump($connect);
-
-
-$user1->disconnect();
+// $user1->disconnect();
 
 // $user1->delete();
 
+// $user1->update();
 
-
-
-
+// $user1->isConnected();
+// $user1->getAllInfos();
+// $user1->getLogin() ;
+// $user1->refresh() ;
 
 
 // var_dump($user1);

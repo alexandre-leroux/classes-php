@@ -14,17 +14,7 @@ class User
     public  $firstname;
     public  $lastname;
 
-    // public function __construct($login, $password, $email, $firstname, $lastname)
-    //     {
 
-   
-    //         $this->login = $login;
-    //         $this->password = $password;
-    //         $this->email = $email;
-    //         $this->firstname = $firstname;
-    //         $this->lastname = $lastname;
-
-    //     }
 
         public function connection_bdd()
             {
@@ -43,12 +33,12 @@ class User
 
 
 
-        public function register($login, $password, $email, $firstname, $lastname)
+        public function register()
             {
                 
                 $bdd = $this->connection_bdd();
             
-            if( $requete = $bdd->query("INSERT INTO utilisateurs ( `login`, `password`, `email`, `firstname`, `lastname`) VALUES ( '$login',  '$password', '$email', '$firstname', '$lastname')"))
+            if( $requete = $bdd->query("INSERT INTO utilisateurs ( `login`, `password`, `email`, `firstname`, `lastname`) VALUES ( '$this->login',  '$this->password', '$this->email', '$this->firstname', '$this->lastname')"))
                 { echo ' enregistrement de l\'utilisateur ok <br>';}
             else{ echo ' l\'enregistremnt de l\'utilisateur a echoué';}
                 
@@ -59,26 +49,26 @@ class User
 
 
 
-        public function connect($login, $password) 
+        public function connect() 
 
             {
 
                 $bdd = $this->connection_bdd();
     
 
-                $requete = $bdd->query("SELECT * FROM utilisateurs WHERE login = '$login' ");
+                $requete = $bdd->query("SELECT * FROM utilisateurs WHERE login = '$this->login' ");
 
                 $donnees_utilisateur = $requete->fetch_assoc();
                 mysqli_close($bdd );
 
-                  if (  $donnees_utilisateur['password'] == $password)
+                  if (  $donnees_utilisateur['password'] == $this->password)
                 {
                     echo ' vous êtes connecté <br>';
-
+                    $this->id = $donnees_utilisateur['id'] ;
                     echo '<pre>';
                     var_dump($donnees_utilisateur);
                     echo '</pre>';
-                    
+                    $this->isconnect=1;
                     return  $donnees_utilisateur;
                
                 }
@@ -97,7 +87,7 @@ class User
       
                 var_dump($this->id,$this->login,$this->email,$this->password,$this->firstname, $this->lastname );
                  unset($this->id,$this->login,$this->email,$this->password,$this->firstname, $this->lastname ) ;
-                 var_dump($this->id,$this->login,$this->email,$this->password,$this->firstname, $this->lastname );
+
           
                 
   
@@ -126,19 +116,21 @@ class User
             }
        
 
-        public function update($login, $password, $email, $firstname,$lastname)
+        public function update()
                 {
                     $bdd = $this->connection_bdd();
                     $this->connect();
-                    $requete = $bdd->query("UPDATE utilisateurs  SET login='$login', password='$password', email='$email' , firstname='$firstname', lastname='$lastname'  WHERE id = '$this->id' ");
-
-                }
+                    var_dump($this);
+                   if( $requete = $bdd->query("UPDATE utilisateurs  SET login='$this->login', password='$this->password', email='$this->email' , firstname='$this->firstname', lastname='$this->lastname'  WHERE id = '$this->id' "))
+                    {echo 'update ok';}
+                    else  {echo 'update pas ok';}
+                 }
 
 
         public function isConnected() 
                 {
 
-                    if ($this->connect($i) == 2)
+                    if ($this->isconnect == 1)
                     {echo ' il est bien connecté';}
                     else { echo ' is conenected failed';}
                     
@@ -167,33 +159,72 @@ class User
                     echo '</pre> ';
                     
                 }
-
-                public function refresh() 
+         public function getLemail() 
                 {
                     $bdd = $this->connection_bdd();
                     $this->connect();
-
-
+          
+          
                     echo '<pre>';
-                    var_dump($this->login);
+                    var_dump($this->email);
                     echo '</pre> ';
                     
-                }  
+                }
+         public function getLFirstname() 
+                {
+                    $bdd = $this->connection_bdd();
+                    $this->connect();
+          
+          
+                    echo '<pre>';
+                    var_dump($this->firstname);
+                    echo '</pre> ';
+                    
+                }        
+         public function getLastname() 
+               {
+                   $bdd = $this->connection_bdd();
+                   $this->connect();
+         
+         
+                   echo '<pre>';
+                   var_dump($this->Lastname);
+                   echo '</pre> ';
+                   
+               }
+        public function refresh() 
+               {
+                   $bdd = $this->connection_bdd();
+                   $donnees_utilisateur = $this->connect();
+         
+         
+                    $this->login = $donnees_utilisateur['login'];
+                    $this->password=  $donnees_utilisateur['password'];
+                    $this->email= $donnees_utilisateur['email'];
+                    $this->firstname=  $donnees_utilisateur['firstname'];
+                    $this->lastname = $donnees_utilisateur['lastname'];
+
+               }  
 }
 
-// $user1 = new user(null, "alex", 'password', 'le@gr.fr', 'alexandre','leroux');
 
-// $user1 = new user();
+$user1 = new User();
 
-// $user2->register();
+$user1->login = 'junior';
+$user1->password=  'password';
+$user1->email= 'email';
+$user1->firstname=  'first';
+$user1->lastname = 'last';
 
+// $user1->register();
 // $user1->connect();
-// $user2->connect();
-// $user2->delete();
-
-// echo 'la session id est : '.$_SESSION['login']. '<br>';
-
-
+// $user1->disconnect();
+// $user1->delete();
+// $user1->update();
+// $user1->isConnected();
+// $user1->getAllInfos();
+// $user1->getLogin() ;
+// $user1->refresh() ;
 
 
 
